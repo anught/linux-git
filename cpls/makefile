@@ -1,0 +1,8 @@
+PRJDIR = $(shell pwd)
+
+BIN = $(PRJDIR)
+TARGETDIR = $(PRJDIR)
+
+LIBDIR = -L$(PRJDIR)
+INCLUDE = -I$(PRJDIR)
+
