@@ -1,0 +1,72 @@
+
+#include ../compiler_config
+
+#COMPILER=ppc_6xx-g++
+COMPILER=g++
+
+INCLUDE_VARIABLE=include
+
+LOCAL_COMP_OPT=$(COMP_OPT) -fPIC
+
+CODES_PATH=codes
+
+TOOLS_INCLUDE=../../../tools/$(INCLUDE_VARIABLE)
+
+DERIVER_INCLUDE=../../../driver/$(INCLUDE_VARIABLE)
+
+NETMGR_INCLUDE=../../netmgr/$(INCLUDE_VARIABLE)
+
+SIP_INCLUDE=../../sip/$(INCLUDE_VARIABLE)
+
+TEL_INCLUDE=../../tel/$(INCLUDE_VARIABLE)
+
+RADIO_INCLUDE=../../radio/$(INCLUDE_VARIABLE)
+
+IVR_INCLUDE=../../ivr/$(INCLUDE_VARIABLE)
+
+NET_INCLUDE=../../net/$(INCLUDE_VARIABLE)
+
+LIB_PATH=lib
+
+OBJS_PATH=objs
+
+
+
+XML_PARSERC=$(wildcard $(CODES_PATH)/*.c)
+
+XML_PARSERCPP=$(wildcard $(CODES_PATH)/*.cpp)
+
+
+
+XML_PARSERCOBJS=$(patsubst $(CODES_PATH)/%.c, $(OBJS_PATH)/%.o, $(XML_PARSERC))
+
+XML_PARSERCPPOBJS=$(patsubst $(CODES_PATH)/%.cpp, $(OBJS_PATH)/%.o, $(XML_PARSERCPP))
+
+
+
+OBJS=$(XML_PARSERCOBJS) $(XML_PARSERCPPOBJS)
+
+INCLUDE_PATH= -I$(CODES_PATH) -I$(TOOLS_INCLUDE) -I$(DERIVER_INCLUDE) -I$(NETMGR_INCLUDE) -I$(SIP_INCLUDE) -I$(TEL_INCLUDE) -I$(RADIO_INCLUDE)\
+				-I$(IVR_INCLUDE) -I$(NET_INCLUDE)
+
+all:$(LIB_PATH)/libRW_USCfgFile.so
+
+$(OBJS_PATH)/%.o:$(CODES_PATH)/%.c 
+	$(COMPILER) -fPIC -o $@ -c $(INCLUDE_PATH) -fpermissive $^
+	
+$(OBJS_PATH)/%.o:$(CODES_PATH)/%.cpp 
+	$(COMPILER) -fPIC -o $@ -c $(INCLUDE_PATH) -fpermissive $^
+	
+clean:
+	rm -f $(OBJS_PATH)/*
+	rm -f $(CODES_PATH)/*~
+	rm -f *~
+	rm -f $(LIB_PATH)/libRW_USCfgFile.so
+	
+install:
+	cp -f lib/libRW_USCfgFile.so /mnt/hgfs/ShareFolder/
+
+$(LIB_PATH)/libRW_USCfgFile.so:$(OBJS)
+	$(COMPILER) -shared -fPIC -o $@ $^ -Wl,-rpath=./ 
+
+
